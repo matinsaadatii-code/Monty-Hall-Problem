@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-solution"
+version = "0.1.0"
+dependencies = ["streamlit", "nltk", "python-dotenv", "pytest"]
+
+[project.scripts]
+passgen = "src.main:main"   
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
