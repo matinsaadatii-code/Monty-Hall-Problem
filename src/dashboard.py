@@ -3,7 +3,7 @@ import time
 
 from main import MontyHallGame
 
-mhg = MontyHallGame()
+mhg: MontyHallGame = MontyHallGame()
 
 st.title('Monty Hall Problem')
 
@@ -53,7 +53,7 @@ with tab_game:
             st.rerun()
 
     elif g['stage'] == 'result':
-        won = g['doors'][g['final']] == 'car'
+        won: bool = g['doors'][g['final']] == 'car'
         st.session_state.played += 1
         st.session_state.wins += won
 
@@ -85,13 +85,13 @@ with tab_sim:
     number_games: int = st.number_input('Number of Simulations', 
     min_value=1, max_value=10000, value=100, step=1, key='num_simulations')
 
-    wins_with_switching = 0
-    wins_without_switching = 0
+    wins_with_switching: int = 0
+    wins_without_switching: int = 0
 
     chart = st.empty()
 
-    rates_with_switching = []
-    rates_without_switching = []
+    rates_with_switching: list = []
+    rates_without_switching: list = []
 
     for i in range(number_games):
         simulations_without_switching, simulations_with_switching = (

@@ -1,10 +1,25 @@
 import random
 
-
 class MontyHallGame():
     def __init__(self):
         self.doors = ['car'] + ['goat'] * 2
 
+    @staticmethod
+    def _validate_index(value: int, name: str, size: int) -> None:
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise ValueError(f'Invalid {name}. Must be an integer.')
+        if not 0 <= value < size:
+            raise ValueError(f'Invalid {name}. Must be between 0 and {size - 1}.')
+
+    def _validate_doors(self, doors: list[str]) -> None:
+        if not isinstance(doors, list) or not doors:
+            raise ValueError('Invalid doors. Doors must be a non-empty list.')
+        if any(d not in ('goat', 'car') for d in doors):
+            raise ValueError("Invalid doors. Each door must be 'goat' or 'car'.")
+        if doors.count('car') != 1:
+            raise ValueError('Invalid doors. There must be exactly one car.')
+        if len(doors) < 3:
+            raise ValueError('Invalid doors. At least 3 doors are required.')
 
     def monty_hall_simulation(self, switch_doors: bool) -> bool:
         """
@@ -14,6 +29,10 @@ class MontyHallGame():
         :return: True if the contestant won the car, False otherwise.
         :rtype: bool
         """
+
+        # Safe guards for switch_doors
+        if (not isinstance(switch_doors, bool)):
+            raise ValueError('Invalid arg. Please Enter between True or False')
 
         # Initialize doors with one having a car and the rest goats
         random.shuffle(self.doors)
@@ -85,18 +104,65 @@ class MontyHallGame():
         return won
 
     def gui_new_game(self) -> list[str]:
-        doors = self.doors.copy()
+        """
+        Part 1/3 of GUI version of Monty Hall Game. It creates a new game.
+
+        :return: doors
+        :rtype: list[str]
+        """
+
+        # Safe guards for doors
+        self._validate_doors(self.doors)
+
+        doors: list[str] = self.doors.copy()
         random.shuffle(doors)
         return doors
 
     def gui_reveal_goat(self, doors: list[str], initial_choice: int) -> int:
-        options = [
+        """
+        Part 2/3 of GUI version of Monty Hall Game. It reveals a door.
+
+        :param doors
+        :type doors: list[str]
+        :param initial_choice: 
+        :type initial_choice: int
+        :return: random.choice(options)
+        :rtype: int
+        """
+
+        # Safe guards for initial_choice & doors
+        self._validate_doors(doors)
+        self._validate_index(initial_choice, 'initial_choice', len(doors))
+
+        options: list[int] = [
             i for i in range(len(doors))
             if i != initial_choice and doors[i] == 'goat'
         ]
         return random.choice(options)
 
-    def gui_final_choice(self, doors, initial_choice, door_revealed, switch: bool) -> int:
+    def gui_final_choice(self, doors: list[str], initial_choice: int, door_revealed: int, switch: bool) -> int:
+        """
+        Part 3/3 of GUI version of Monty Hall Game. It reveals the final door & what winner won.
+
+        :param doors
+        :type doors: list[str]
+        :param initial_choice
+        :type initial_choice: int
+        :param door_revealed
+        :type door_revealed: int
+        :param switch
+        :type switch: bool
+        :return
+        :rtype: int
+        """
+
+        # Safe guards for doors, initial_choice, door_revealed
+        self._validate_doors(doors)
+        self._validate_index(initial_choice, 'initial_choice', len(doors))
+        self._validate_index(door_revealed, 'door_revealed', len(doors))
+        if (not isinstance(switch, bool)):
+            raise ValueError('Invalid choice. ')
+
         if not switch:
             return initial_choice
         return next(
@@ -113,9 +179,13 @@ class MontyHallGame():
         :return: None
         """
 
+        # Safe guards for num_games
+        if not isinstance(num_games, int) or num_games <= 0:
+            raise ValueError('Invalid number. ')
+
         # Simulate games where contestant keeps and switches doors
-        num_wins_without_switching = sum(self.monty_hall_simulation(switch_doors=False) for _ in range(num_games))
-        num_wins_with_switching = sum(self.monty_hall_simulation(switch_doors=True) for _ in range(num_games))
+        num_wins_without_switching: int = sum(self.monty_hall_simulation(switch_doors=False) for _ in range(num_games))
+        num_wins_with_switching: int = sum(self.monty_hall_simulation(switch_doors=True) for _ in range(num_games))
 
         return num_wins_without_switching, num_wins_with_switching
 
@@ -126,6 +196,6 @@ if __name__ == "__main__":
     num_wins_without_switching, num_wins_with_switching = mhg.simulate_games(num_games)
 
     print(f"Winning percentage without switching doors: {(num_wins_without_switching/num_games):.2%}")
-    print(f"Winning percentage with    switching doors: {(num_wins_with_switching/num_games):.2%}")
+    print(f"Winning percentage with switching doors: {(num_wins_with_switching/num_games):.2%}")
 
     mhg.cmd_monty_hall_game()
